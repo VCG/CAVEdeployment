@@ -23,7 +23,7 @@ var_dict = {
     "pcg_project_name": "data_project",
     "pcg_project_region": "sweet-sweet-kingdom",
     "sql_project_name": "${PROJECT_NAME}",
-    "sql_regio": "${REGION}",
+    "sql_region": "${REGION}",
     "sql_zone": "${ZONE}",
     "docker_repository": "docker.io/caveconnectome",
     "add_dns_hostnames": ["add_hostname1", "add_hostname2"],
