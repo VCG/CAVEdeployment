@@ -69,7 +69,7 @@ spec:
       terminationGracePeriodSeconds: 65
       containers:
         - name: meshing
-          image: ${PYCG_IMAGE_SRC}
+          image: ${DOCKER_REPOSITORY}/pychunkedgraph:v${PYCG_VERSION}
           imagePullPolicy: Always
           ports:
             - containerPort: 80

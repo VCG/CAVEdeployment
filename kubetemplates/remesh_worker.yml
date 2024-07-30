@@ -55,7 +55,7 @@ spec:
       terminationGracePeriodSeconds: 20
       containers:
         - name: remeshworker
-          image: ${DOCKER_REPOSITORY}/pychunkedgraph:v${PYCG_VERSION}
+          image: ${PYCG_IMAGE_SRC}
           imagePullPolicy: Always
           volumeMounts:
             - name: google-cloud-key

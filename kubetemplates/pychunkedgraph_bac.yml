@@ -99,7 +99,7 @@ spec:
       terminationGracePeriodSeconds: 605
       containers:
         - name: pychunkedgraph
-          image: ${PYCG_IMAGE_SRC}
+          image: ${DOCKER_REPOSITORY}/pychunkedgraph:v${PYCG_VERSION}
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -232,7 +232,7 @@ spec:
       terminationGracePeriodSeconds: 15
       containers:
         - name: pychunkedgraph
-          image: ${PYCG_IMAGE_SRC}
+          image: ${DOCKER_REPOSITORY}/pychunkedgraph:v${PYCG_VERSION}
           imagePullPolicy: Always
           ports:
             - containerPort: 80
