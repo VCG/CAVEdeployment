@@ -6,6 +6,9 @@ source $ENV_REPO_PATH/$1.sh
 gcloud pubsub topics create ${L2CACHE_EXCHANGE}
 gcloud pubsub subscriptions create ${L2CACHE_UPDATE_QUEUE} --topic=${L2CACHE_EXCHANGE} --topic-project=${PROJECT_NAME} --ack-deadline=60 --expiration-period="never" --max-retry-delay=10
 
+gcloud pubsub topics create ${MAT_TASKQUEUE_TOPIC}
+gcloud pubsub subscriptions create ${MAT_TASKQUEUE_SUBSCRIPTION} --topic=${MAT_TASKQUEUE_TOPIC} --topic-project=${PROJECT_NAME} --ack-deadline=300 --expiration-period="never" --max-retry-delay=10
+
 gcloud pubsub topics create ${SKELETON_CACHE_EXCHANGE}
 gcloud pubsub subscriptions create ${SKELETON_CACHE_RETRIEVE_QUEUE} --topic=${SKELETON_CACHE_EXCHANGE} --topic-project=${PROJECT_NAME} --ack-deadline=180 --expiration-period="never" --max-retry-delay=10
 
