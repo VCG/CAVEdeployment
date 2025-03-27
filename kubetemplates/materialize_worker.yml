@@ -16,7 +16,7 @@ spec:
           name: custom.googleapis.com|http|celery_queue_length
         target:
           type: AverageValue
-          averageValue: 1
+          averageValue: "1"
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -36,7 +36,7 @@ spec:
           name: custom.googleapis.com|http|celery_queue_length
         target:
           type: AverageValue
-          averageValue: 2
+          averageValue: "2"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -161,6 +161,18 @@ spec:
               value: ${AUTH_URL}
             - name: DAF_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${CAVE_SECRET_FILENAME}
+            - name: QUEUE_LENGTH_LIMIT
+              value: "10000"
+            - name: QUEUES_TO_THROTTLE
+              value: '["process"]'
+            - name: REDIS_PORT
+              value: '${MAT_REDIS_PORT}'
+            - name: REDIS_URL
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_BROKER_URL
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_RESULT_BACKEND
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
             - name: QUEUE_NAME
               value: ${PRODUCER_QUEUE_NAME}
             - name: CELERY_CLOUDVOLUME_CACHE_BYTES
@@ -175,10 +187,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.uid
-            - name: TASKQUEUE_QURL
-              value: "pubsub://projects/${PROJECT_NAME}/topics/${MAT_TASKQUEUE_TOPIC}/subscriptions/${MAT_TASKQUEUE_SUBSCRIPTION}"
-            - name: TASKQUEUE_TIMEOUT
-              value: "300"
           resources:
             requests:
               cpu: ${CELERY_CPU}
@@ -342,10 +350,24 @@ spec:
               value: ${AUTH_URL}
             - name: DAF_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${CAVE_SECRET_FILENAME}
+            - name: QUEUE_LENGTH_LIMIT
+              value: "10000"
+            - name: QUEUES_TO_THROTTLE
+              value: '["process"]'
+            - name: REDIS_PORT
+              value: '${MAT_REDIS_PORT}'
+            - name: REDIS_URL
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_BROKER_URL
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_RESULT_BACKEND
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
             - name: QUEUE_NAME
               value: ${CONSUMER_QUEUE_NAME}
             - name: WORKER_NAME
               value: ${CELERY_CONSUMER_WORKER_NAME}
+            - name: CELERY_CLOUDVOLUME_CACHE_BYTES
+              value: "100000000"
             - name: WORKER_HOSTNAME
               valueFrom:
                 fieldRef:
@@ -457,6 +479,24 @@ spec:
               value: ${AUTH_URL}
             - name: DAF_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${CAVE_SECRET_FILENAME}
+            - name: QUEUE_LENGTH_LIMIT
+              value: "10000"
+            - name: QUEUES_TO_THROTTLE
+              value: '["process"]'
+            - name: REDIS_HOST
+              value: '${MAT_REDIS_HOST}'
+            - name: REDIS_PORT
+              value: '${MAT_REDIS_PORT}'
+            - name: REDIS_PASSWORD
+              value: '${MAT_REDIS_PASSWORD}'
+            - name: REDIS_URL
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_BROKER_URL
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_RESULT_BACKEND
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_CLOUDVOLUME_CACHE_BYTES
+              value: "100000000"
           resources:
             requests:
               cpu: 10m

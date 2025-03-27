@@ -149,6 +149,24 @@ spec:
               value: ${INFO_URL}
             - name: DAF_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${CAVE_SECRET_FILENAME}
+            - name: QUEUE_LENGTH_LIMIT
+              value: "10000"
+            - name: QUEUES_TO_THROTTLE
+              value: '["process"]'
+            - name: REDIS_HOST
+              value: '${MAT_REDIS_HOST}'
+            - name: REDIS_PORT
+              value: '${MAT_REDIS_PORT}'
+            - name: REDIS_PASSWORD
+              value: '${MAT_REDIS_PASSWORD}'
+            - name: REDIS_URL
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_BROKER_URL
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_RESULT_BACKEND
+              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+            - name: CELERY_CLOUDVOLUME_CACHE_BYTES
+              value: "100000000"
           resources:
             requests:
               memory: 950Mi
