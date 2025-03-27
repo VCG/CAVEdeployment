@@ -6,6 +6,7 @@ metadata:
 data:
   config.cfg: |
     SKELETON_CACHE_BUCKET = "gs://${SKELETON_CACHE_BUCKET}"
+    SKELETONCACHE_MAX_REPLICAS = ${SKELETONCACHE_MAX_REPLICAS}
 ---
 apiVersion: v1
 kind: Service
@@ -37,6 +38,13 @@ spec:
         target:
           type: Utilization
           averageUtilization: 90
+    - type: Pods
+      pods:
+        metric:
+          name: custom.googleapis.com|http|uwsgi_perc_busy_workers
+        target:
+          type: AverageValue
+          averageValue: 75
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -98,10 +106,22 @@ spec:
               value: "skeletoncache.app.config.DevelopmentConfig"
             - name: DAF_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${CAVE_SECRET_FILENAME}
-            - name: SKELETON_CACHE_EXCHANGE
-              value: ${SKELETON_CACHE_EXCHANGE}
-            - name: SKELETON_CACHE_RETRIEVE_QUEUE
-              value: ${SKELETON_CACHE_RETRIEVE_QUEUE}
+            - name: CACHE_NON_H5_SKELETONS
+              value: "false"
+            - name: SKELETON_CACHE_LOW_PRIORITY_EXCHANGE
+              value: ${SKELETON_CACHE_LOW_PRIORITY_EXCHANGE}
+            - name: SKELETON_CACHE_HIGH_PRIORITY_EXCHANGE
+              value: ${SKELETON_CACHE_HIGH_PRIORITY_EXCHANGE}
+            - name: SKELETON_CACHE_LOW_PRIORITY_RETRIEVE_QUEUE
+              value: ${SKELETON_CACHE_LOW_PRIORITY_RETRIEVE_QUEUE}
+            - name: SKELETON_CACHE_HIGH_PRIORITY_RETRIEVE_QUEUE
+              value: ${SKELETON_CACHE_HIGH_PRIORITY_RETRIEVE_QUEUE}
+            - name: SKELETON_CACHE_DEAD_LETTER_RETRIEVE_QUEUE
+              value: ${SKELETON_CACHE_DEAD_LETTER_RETRIEVE_QUEUE}
+            - name: VERBOSE_LEVEL
+              value: "0"
+            - name: DEBUG_ROOT_ID
+              value: "864691137021499502"
           resources:
             requests:
               memory: 600Mi
@@ -120,6 +140,43 @@ spec:
             initialDelaySeconds: 15
             timeoutSeconds: 1
             periodSeconds: 60
+        - name: uwsgi-exporter
+          image: caveconnectome/uwsgi-export-workers:v14
+          # Exposes the metrics endpoint on 0.0.0.0:9101
+          ports:
+             - containerPort: 9101
+          env:
+          # This tells the exporter where to find the uWSGI stats server
+          - name: UWSGI_STATS_URL
+            value: "http://localhost:1717"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+        - name: prometheus-to-sd
+          image: gcr.io/google-containers/prometheus-to-sd:v0.8.0
+          command: ["/monitor"]
+          args:
+            - --source=http://localhost:9101/metrics
+            - --stackdriver-prefix=custom.googleapis.com
+            - --pod-id=$(POD_ID)
+            - --namespace-id=$(POD_NAMESPACE)
+          env:
+            # save Kubernetes metadata as environment variables for use in metrics
+            - name: POD_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
         - name: sysctl-buddy
           image: alpine:3.4
           command:
@@ -156,7 +213,9 @@ spec:
           name: pubsub.googleapis.com|subscription|num_undelivered_messages
           selector:
             matchLabels:
-              resource.labels.subscription_id: ${SKELETON_CACHE_RETRIEVE_QUEUE}
+              resource.labels.subscription_id: ${SKELETON_CACHE_LOW_PRIORITY_RETRIEVE_QUEUE}
+              resource.labels.subscription_id: ${SKELETON_CACHE_HIGH_PRIORITY_RETRIEVE_QUEUE}
+              # resource.labels.subscription_id: ${SKELETON_CACHE_DEAD_LETTER_RETRIEVE_QUEUE}
         target:
           type: AverageValue
           averageValue: 1
@@ -226,18 +285,30 @@ spec:
               value: ${DATA_PROJECT_NAME}
             - name: PROJECT_NAME
               value: ${PROJECT_NAME}
-            - name: SKELETON_CACHE_RETRIEVE_QUEUE
-              value: ${SKELETON_CACHE_RETRIEVE_QUEUE}
-            - name: SKELETON_CACHE_EXCHANGE
-              value: ${SKELETON_CACHE_EXCHANGE}
+            - name: CACHE_NON_H5_SKELETONS
+              value: "false"
+            - name: SKELETON_CACHE_LOW_PRIORITY_EXCHANGE
+              value: ${SKELETON_CACHE_LOW_PRIORITY_EXCHANGE}
+            - name: SKELETON_CACHE_HIGH_PRIORITY_EXCHANGE
+              value: ${SKELETON_CACHE_HIGH_PRIORITY_EXCHANGE}
+            - name: SKELETON_CACHE_LOW_PRIORITY_RETRIEVE_QUEUE
+              value: ${SKELETON_CACHE_LOW_PRIORITY_RETRIEVE_QUEUE}
+            - name: SKELETON_CACHE_HIGH_PRIORITY_RETRIEVE_QUEUE
+              value: ${SKELETON_CACHE_HIGH_PRIORITY_RETRIEVE_QUEUE}
+            - name: SKELETON_CACHE_DEAD_LETTER_RETRIEVE_QUEUE
+              value: ${SKELETON_CACHE_DEAD_LETTER_RETRIEVE_QUEUE}
+            - name: VERBOSE_LEVEL
+              value: "0"
+            - name: DEBUG_ROOT_ID
+              value: "864691137021499502"
             - name: AUTH_USE_REDIS
               value: "false"
             - name: DAF_CREDENTIALS
               value: /root/.cloudvolume/secrets/${CAVE_SECRET_FILENAME}
           resources:
             requests:
-              memory: 2500Mi
-              cpu: 250m
+              memory: 500Mi
+              cpu: 50m
           command:
             - /bin/sh
             - -c

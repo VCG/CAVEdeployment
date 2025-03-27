@@ -1,5 +1,6 @@
 source env_config.sh
 source $ENV_REPO_PATH/$1.sh
+source ./infrastructure/local/convert_variables.sh
 
 mkdir -p ${YAML_FOLDER}
 envsubst < kubetemplates/pcgl2cache.yml > ${YAML_FOLDER}/pcgl2cache.yml
@@ -9,8 +10,12 @@ envsubst < kubetemplates/ingress.yml > ${YAML_FOLDER}/ingress.yml
 envsubst < kubetemplates/ingress-service.yml > ${YAML_FOLDER}/ingress-service.yml
 envsubst < kubetemplates/materialize.yml > ${YAML_FOLDER}/materialize.yml
 envsubst < kubetemplates/materialize_worker.yml > ${YAML_FOLDER}/materialize_worker.yml
+<<<<<<< HEAD
 envsubst < kubetemplates/materialize_migrate.yml > ${YAML_FOLDER}/materialize_migrate.yml
 envsubst < kubetemplates/materialize_pubsub_worker.yml > ${YAML_FOLDER}/materialize_pubsub_worker.yml
+=======
+envsubst < kubetemplates/materialize_migrations.yml > ${YAML_FOLDER}/materialize_migrations.yml
+>>>>>>> main
 envsubst < kubetemplates/pychunkedgraph.yml > ${YAML_FOLDER}/pychunkedgraph.yml
 envsubst < kubetemplates/meshing.yml > ${YAML_FOLDER}/meshing.yml
 envsubst < kubetemplates/nglstate.yml > ${YAML_FOLDER}/nglstate.yml
@@ -29,6 +34,7 @@ envsubst < kubetemplates/cert-manager-values.yml > ${YAML_FOLDER}/cert-manager-v
 envsubst < kubetemplates/certificate.yml > ${YAML_FOLDER}/certificate.yml
 envsubst < kubetemplates/proxy.yml > ${YAML_FOLDER}/proxy.yml
 envsubst < kubetemplates/guidebook.yml > ${YAML_FOLDER}/guidebook.yml
+envsubst < kubetemplates/tourguide.yml > ${YAML_FOLDER}/tourguide.yml
 envsubst < kubetemplates/dash.yml > ${YAML_FOLDER}/dash.yml
 envsubst < kubetemplates/auth-info.yml > ${YAML_FOLDER}/auth-info.yml
 envsubst < kubetemplates/redis_production_values.yml > ${YAML_FOLDER}/redis_production_values.yml

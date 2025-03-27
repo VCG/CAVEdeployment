@@ -1,5 +1,6 @@
 source env_config.sh
 source $ENV_REPO_PATH/$1.sh
+source ./infrastructure/local/convert_variables.sh
 
 ./infrastructure/local/switch_context.sh $1
 
@@ -18,10 +19,11 @@ ${MESHING_MAX_REPLICAS:-0}
 ${MESHWORKER_MAX_REPLICAS:-0}
 ${REMESHWORKER_MAX_REPLICAS:-0}
 ${GUIDEBOOK_MAX_REPLICAS:-0}
+${TOURGUIDE_MAX_REPLICAS:-0}
 ${DASH_MAX_REPLICAS:-0}
 ${PPROGRESS_MAX_REPLICAS:-0}
 ${PMANAGEMENT_MAX_REPLICAS:-0}
-${CAVECANERY_MAX_REPLICAS:-0})
+${CAVECANARY_MAX_REPLICAS:-0})
 
 SERVICE_ARRAY=(
 pcgl2cache
@@ -35,10 +37,12 @@ meshing
 mesh_worker
 remesh_worker
 guidebook
+tourguide
 dash
 pprogress
 pmanagement
 cavecanary)
+
 
 for i in $(seq 0 1 $((${#MAX_REPLICA_ARRAY[@]}-1))); do
   echo $i
@@ -52,6 +56,8 @@ for i in $(seq 0 1 $((${#MAX_REPLICA_ARRAY[@]}-1))); do
     kubectl delete -f ${YAML_FOLDER}/${SERVICE_ARRAY[i]}.yml
   fi
 done
+
+./infrastructure/local/deploy_migration_job.sh $1
 
 kubectl apply -f ${YAML_FOLDER}/auth-info.yml
 kubectl apply -f ${YAML_FOLDER}/ingress.yml
