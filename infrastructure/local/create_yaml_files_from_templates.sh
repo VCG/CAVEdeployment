@@ -1,4 +1,5 @@
 source env_config.sh
+source ./infrastructure/local/defaults.sh
 source $ENV_REPO_PATH/$1.sh
 source ./infrastructure/local/convert_variables.sh
 
@@ -10,12 +11,7 @@ envsubst < kubetemplates/ingress.yml > ${YAML_FOLDER}/ingress.yml
 envsubst < kubetemplates/ingress-service.yml > ${YAML_FOLDER}/ingress-service.yml
 envsubst < kubetemplates/materialize.yml > ${YAML_FOLDER}/materialize.yml
 envsubst < kubetemplates/materialize_worker.yml > ${YAML_FOLDER}/materialize_worker.yml
-<<<<<<< HEAD
-envsubst < kubetemplates/materialize_migrate.yml > ${YAML_FOLDER}/materialize_migrate.yml
-envsubst < kubetemplates/materialize_pubsub_worker.yml > ${YAML_FOLDER}/materialize_pubsub_worker.yml
-=======
 envsubst < kubetemplates/materialize_migrations.yml > ${YAML_FOLDER}/materialize_migrations.yml
->>>>>>> main
 envsubst < kubetemplates/pychunkedgraph.yml > ${YAML_FOLDER}/pychunkedgraph.yml
 envsubst < kubetemplates/meshing.yml > ${YAML_FOLDER}/meshing.yml
 envsubst < kubetemplates/nglstate.yml > ${YAML_FOLDER}/nglstate.yml
