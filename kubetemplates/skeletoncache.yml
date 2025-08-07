@@ -20,9 +20,9 @@ metadata:
   namespace: default
   name: pod-reader
 rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -30,9 +30,9 @@ metadata:
   name: read-pods
   namespace: default
 subjects:
-- kind: ServiceAccount
-  name: kubernetes-read-pods-sa
-  namespace: default
+  - kind: ServiceAccount
+    name: kubernetes-read-pods-sa
+    namespace: default
 roleRef:
   kind: Role
   name: pod-reader
@@ -178,11 +178,11 @@ spec:
           image: caveconnectome/uwsgi-export-workers:v14
           # Exposes the metrics endpoint on 0.0.0.0:9101
           ports:
-             - containerPort: 9101
+            - containerPort: 9101
           env:
-          # This tells the exporter where to find the uWSGI stats server
-          - name: UWSGI_STATS_URL
-            value: "http://localhost:1717"
+            # This tells the exporter where to find the uWSGI stats server
+            - name: UWSGI_STATS_URL
+              value: "http://localhost:1717"
           readinessProbe:
             httpGet:
               path: /
@@ -251,14 +251,14 @@ spec:
           name: custom.googleapis.com|pubsub|undelivered_per_worker_${SKELETON_CACHE_HIGH_PRIORITY_RETRIEVE_QUEUE_SAFE_LOWER}
         target:
           type: Value
-          value: "1.5" 
+          value: "1.5"
     - type: External
       external:
         metric:
           name: custom.googleapis.com|pubsub|undelivered_per_worker_${SKELETON_CACHE_LOW_PRIORITY_RETRIEVE_QUEUE_SAFE_LOWER}
         target:
           type: Value
-          value: "1.5"  
+          value: "1.5"
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -273,14 +273,14 @@ spec:
     updateMode: Auto
   resourcePolicy:
     containerPolicies:
-    - containerName: 'skeletoncache-worker'
-      minAllowed:
-        cpu: 50m     
-        memory: 200Mi 
-      maxAllowed:
-        cpu: 1000m        
-        memory: 2Gi    
-      controlledResources: ["cpu", "memory"]
+      - containerName: "skeletoncache-worker"
+        minAllowed:
+          cpu: 50m
+          memory: 200Mi
+        maxAllowed:
+          cpu: 1000m
+          memory: 2Gi
+        controlledResources: ["cpu", "memory"]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -380,7 +380,7 @@ kind: Deployment
 metadata:
   name: skeletoncache-stats-exporter
 spec:
-  replicas: 1  # Only need one instance
+  replicas: 1 # Only need one instance
   selector:
     matchLabels:
       app: skeletoncache-stats-exporter
@@ -425,7 +425,7 @@ spec:
             - name: WORKER_LABEL_SELECTOR
               value: "app=skeletoncache-worker"
             - name: EXPORTER_POLL_INTERVAL
-              value: "30"  # Poll every 30 seconds for efficiency
+              value: "30" # Poll every 30 seconds for efficiency
           command:
             - /bin/sh
             - -c
@@ -502,9 +502,9 @@ spec:
             - name: PROJECT_NAME
               value: ${PROJECT_NAME}
             - name: DEV_SLACK_WEBHOOK_ID
-              value: "T0CL3AB5X/B08KJ36BJAF/DfcLRvJzizvCaozpMugAnu38"  # Keith Wiley's Slack direct messages
+              value: "T0CL3AB5X/B08KJ36BJAF/DfcLRvJzizvCaozpMugAnu38" # Keith Wiley's Slack direct messages
             - name: PROD_SLACK_WEBHOOK_ID
-              value: "T0CL3AB5X/B08P52E7A05/iXHgqifbk8MtpDw4adoSh5pW"  # deployment-hour-alerts channel
+              value: "T0CL3AB5X/B08P52E7A05/iXHgqifbk8MtpDw4adoSh5pW" # deployment-hour-alerts channel
             - name: VERBOSE_LEVEL
               value: "1"
             - name: AUTH_USE_REDIS
