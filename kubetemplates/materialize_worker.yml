@@ -140,7 +140,7 @@ spec:
             - name: MATERIALIZATION_ENGINE_SETTINGS
               value: /app/materializationengine/instance/config.cfg
             - name: CELERY_BROKER_URL
-              value: redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0
+              value: "redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0"
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${GOOGLE_SECRET_FILENAME}
             - name: AUTH_URI
@@ -158,37 +158,27 @@ spec:
             - name: DAF_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${CAVE_SECRET_FILENAME}
             - name: QUEUE_LENGTH_LIMIT
-              value: "10000"
-            - name: QUEUES_TO_THROTTLE
-              value: '["process"]'
-            - name: REDIS_PORT
-              value: '${MAT_REDIS_PORT}'
-            - name: REDIS_URL
-              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
-            - name: CELERY_BROKER_URL
-              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
-            - name: CELERY_RESULT_BACKEND
-              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
-            - name: QUEUE_NAME
-              value: ${PRODUCER_QUEUE_NAME}
-            - name: CELERY_CLOUDVOLUME_CACHE_BYTES
-              value: "5200000000"
-            - name: WORKER_NAME
-              value: ${CELERY_PRODUCER_WORKER_NAME}
-            - name: QUEUE_LENGTH_LIMIT
               value: "5000"
             - name: QUEUES_TO_THROTTLE
               value: process
+            - name: REDIS_PORT
+              value: "${MAT_REDIS_PORT}"
+            - name: REDIS_URL
+              value: "redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0"
+            - name: CELERY_RESULT_BACKEND
+              value: "redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0"
+            - name: QUEUE_NAME
+              value: ${PRODUCER_QUEUE_NAME}
+            - name: CELERY_CLOUDVOLUME_CACHE_BYTES
+              value: "100000000"
+            - name: WORKER_NAME
+              value: ${CELERY_PRODUCER_WORKER_NAME}
             - name: THROTTLE_QUEUES
               value: "true"
             - name: REDIS_HOST
               value: "${MAT_REDIS_HOST}"
-            - name: REDIS_PORT
-              value: "${MAT_REDIS_PORT}"
             - name: REDIS_PASSWORD
-              value: "${MAT_REDIS_PASSWORD}" 
-            - name: CELERY_CLOUDVOLUME_CACHE_BYTES
-              value: "100000000"             
+              value: "${MAT_REDIS_PASSWORD}"
             - name: WORKER_HOSTNAME
               valueFrom:
                 fieldRef:
@@ -222,40 +212,40 @@ spec:
           # Replace <DB_PORT> with the port that the proxy should open
           # to listen for database connections from the application
           env:
-          - name: CSQL_PROXY_PORT
-            value: "3306"
-          # If connecting from a VPC-native GKE cluster, you can use the
-          # following flag to have the proxy connect over private IP
-          # - name: CSQL_PROXY_PRIVATE_IP
-          #   value: "true"
+            - name: CSQL_PROXY_PORT
+              value: "3306"
+            # If connecting from a VPC-native GKE cluster, you can use the
+            # following flag to have the proxy connect over private IP
+            # - name: CSQL_PROXY_PRIVATE_IP
+            #   value: "true"
 
-          # Enable HTTP healthchecks on port 9801. This enables /liveness,
-          # /readiness and /startup health check endpoints. Allow connections
-          # listen for connections on any interface (0.0.0.0) so that the
-          # k8s management components can reach these endpoints.
-          - name: CSQL_PROXY_HEALTH_CHECK
-            value: "true"
-          - name: CSQL_PROXY_HTTP_PORT
-            value: "9801"
-          - name: CSQL_PROXY_HTTP_ADDRESS
-            value: 0.0.0.0
+            # Enable HTTP healthchecks on port 9801. This enables /liveness,
+            # /readiness and /startup health check endpoints. Allow connections
+            # listen for connections on any interface (0.0.0.0) so that the
+            # k8s management components can reach these endpoints.
+            - name: CSQL_PROXY_HEALTH_CHECK
+              value: "true"
+            - name: CSQL_PROXY_HTTP_PORT
+              value: "9801"
+            - name: CSQL_PROXY_HTTP_ADDRESS
+              value: 0.0.0.0
 
-          # Configure the proxy to exit gracefully when sent a k8s configuration
-          # file.
-          - name: CSQL_PROXY_EXIT_ZERO_ON_SIGTERM
-            value: "false"
+            # Configure the proxy to exit gracefully when sent a k8s configuration
+            # file.
+            - name: CSQL_PROXY_EXIT_ZERO_ON_SIGTERM
+              value: "false"
 
-          # Enable the admin api server (which only listens for local connections)
-          # and enable the /quitquitquit endpoint. This allows other pods
-          # to shut down the proxy gracefully when they are ready to exit.
-          - name: CSQL_PROXY_QUITQUITQUIT
-            value: "true"
-          - name: CSQL_PROXY_ADMIN_PORT
-            value: "9092"
+            # Enable the admin api server (which only listens for local connections)
+            # and enable the /quitquitquit endpoint. This allows other pods
+            # to shut down the proxy gracefully when they are ready to exit.
+            - name: CSQL_PROXY_QUITQUITQUIT
+              value: "true"
+            - name: CSQL_PROXY_ADMIN_PORT
+              value: "9092"
 
-          # Enable structured logging with LogEntry format
-          - name: CSQL_PROXY_STRUCTURED_LOGS
-            value: "true"
+            # Enable structured logging with LogEntry format
+            - name: CSQL_PROXY_STRUCTURED_LOGS
+              value: "true"
 
           # The /startup probe returns OK when the proxy is ready to receive
           # connections from the application. In this example, k8s will check
@@ -318,8 +308,8 @@ spec:
           # Declare the HTTP Port so that k8s components can reach the
           # metrics and health check endpoints.
           ports:
-          - containerPort: 9801
-            protocol: TCP
+            - containerPort: 9801
+              protocol: TCP
           lifecycle:
             preStop:
               exec:
@@ -422,9 +412,9 @@ spec:
             - name: REDIS_PORT
               value: "${MAT_REDIS_PORT}"
             - name: REDIS_PASSWORD
-              value: "${MAT_REDIS_PASSWORD}" 
+              value: "${MAT_REDIS_PASSWORD}"
             - name: CELERY_CLOUDVOLUME_CACHE_BYTES
-              value: "100000000"             
+              value: "100000000"
             - name: WORKER_HOSTNAME
               valueFrom:
                 fieldRef:
@@ -447,7 +437,7 @@ spec:
             # Set the --max-connections flag to 50
             - "--port=3306"
             - "--credentials-file=/secrets/cloudsql/${GOOGLE_SECRET_FILENAME}"
-            - "${PROJECT_NAME}:${REGION}:${SQL_INSTANCE_NAME}"
+            - "${SQL_PROJECT_NAME}:${SQL_REGION}:${SQL_INSTANCE_NAME}"
           resources:
             requests:
               memory: 8Mi
@@ -458,40 +448,40 @@ spec:
           # Replace <DB_PORT> with the port that the proxy should open
           # to listen for database connections from the application
           env:
-          - name: CSQL_PROXY_PORT
-            value: "3306"
-          # If connecting from a VPC-native GKE cluster, you can use the
-          # following flag to have the proxy connect over private IP
-          # - name: CSQL_PROXY_PRIVATE_IP
-          #   value: "true"
+            - name: CSQL_PROXY_PORT
+              value: "3306"
+            # If connecting from a VPC-native GKE cluster, you can use the
+            # following flag to have the proxy connect over private IP
+            # - name: CSQL_PROXY_PRIVATE_IP
+            #   value: "true"
 
-          # Enable HTTP healthchecks on port 9801. This enables /liveness,
-          # /readiness and /startup health check endpoints. Allow connections
-          # listen for connections on any interface (0.0.0.0) so that the
-          # k8s management components can reach these endpoints.
-          - name: CSQL_PROXY_HEALTH_CHECK
-            value: "true"
-          - name: CSQL_PROXY_HTTP_PORT
-            value: "9801"
-          - name: CSQL_PROXY_HTTP_ADDRESS
-            value: 0.0.0.0
+            # Enable HTTP healthchecks on port 9801. This enables /liveness,
+            # /readiness and /startup health check endpoints. Allow connections
+            # listen for connections on any interface (0.0.0.0) so that the
+            # k8s management components can reach these endpoints.
+            - name: CSQL_PROXY_HEALTH_CHECK
+              value: "true"
+            - name: CSQL_PROXY_HTTP_PORT
+              value: "9801"
+            - name: CSQL_PROXY_HTTP_ADDRESS
+              value: 0.0.0.0
 
-          # Configure the proxy to exit gracefully when sent a k8s configuration
-          # file.
-          - name: CSQL_PROXY_EXIT_ZERO_ON_SIGTERM
-            value: "false"
+            # Configure the proxy to exit gracefully when sent a k8s configuration
+            # file.
+            - name: CSQL_PROXY_EXIT_ZERO_ON_SIGTERM
+              value: "false"
 
-          # Enable the admin api server (which only listens for local connections)
-          # and enable the /quitquitquit endpoint. This allows other pods
-          # to shut down the proxy gracefully when they are ready to exit.
-          - name: CSQL_PROXY_QUITQUITQUIT
-            value: "true"
-          - name: CSQL_PROXY_ADMIN_PORT
-            value: "9092"
+            # Enable the admin api server (which only listens for local connections)
+            # and enable the /quitquitquit endpoint. This allows other pods
+            # to shut down the proxy gracefully when they are ready to exit.
+            - name: CSQL_PROXY_QUITQUITQUIT
+              value: "true"
+            - name: CSQL_PROXY_ADMIN_PORT
+              value: "9092"
 
-          # Enable structured logging with LogEntry format
-          - name: CSQL_PROXY_STRUCTURED_LOGS
-            value: "true"
+            # Enable structured logging with LogEntry format
+            - name: CSQL_PROXY_STRUCTURED_LOGS
+              value: "true"
 
           # The /startup probe returns OK when the proxy is ready to receive
           # connections from the application. In this example, k8s will check
@@ -554,8 +544,8 @@ spec:
           # Declare the HTTP Port so that k8s components can reach the
           # metrics and health check endpoints.
           ports:
-          - containerPort: 9801
-            protocol: TCP
+            - containerPort: 9801
+              protocol: TCP
           lifecycle:
             preStop:
               exec:
@@ -679,9 +669,9 @@ spec:
             - name: REDIS_PORT
               value: "${MAT_REDIS_PORT}"
             - name: REDIS_PASSWORD
-              value: "${MAT_REDIS_PASSWORD}" 
+              value: "${MAT_REDIS_PASSWORD}"
             - name: CELERY_BROKER_URL
-              value: redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0
+              value: "redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0"
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${GOOGLE_SECRET_FILENAME}
             - name: AUTH_URI
@@ -699,30 +689,22 @@ spec:
             - name: DAF_CREDENTIALS
               value: /home/nginx/.cloudvolume/secrets/${CAVE_SECRET_FILENAME}
             - name: QUEUE_LENGTH_LIMIT
-              value: "10000"
+              value: "5000"
             - name: QUEUES_TO_THROTTLE
-              value: '["process"]'
-            - name: REDIS_PORT
-              value: '${MAT_REDIS_PORT}'
+              value: process
             - name: REDIS_URL
-              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
-            - name: CELERY_BROKER_URL
-              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+              value: "redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0"
             - name: CELERY_RESULT_BACKEND
-              value: 'redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0'
+              value: "redis://:${MAT_REDIS_PASSWORD}@${MAT_REDIS_HOST}:${MAT_REDIS_PORT}/0"
             - name: QUEUE_NAME
               value: ${CONSUMER_QUEUE_NAME}
             - name: WORKER_NAME
               value: ${CELERY_CONSUMER_WORKER_NAME}
-            - name: QUEUE_LENGTH_LIMIT
-              value: "5000"
-            - name: QUEUES_TO_THROTTLE
-              value: process
             - name: THROTTLE_QUEUES
               value: "true"
             - name: CELERY_CLOUDVOLUME_CACHE_BYTES
               value: "100000000"
-            - name: WORKER_HOSTNAME             
+            - name: WORKER_HOSTNAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
@@ -755,40 +737,40 @@ spec:
           # Replace <DB_PORT> with the port that the proxy should open
           # to listen for database connections from the application
           env:
-          - name: CSQL_PROXY_PORT
-            value: "3306"
-          # If connecting from a VPC-native GKE cluster, you can use the
-          # following flag to have the proxy connect over private IP
-          # - name: CSQL_PROXY_PRIVATE_IP
-          #   value: "true"
+            - name: CSQL_PROXY_PORT
+              value: "3306"
+            # If connecting from a VPC-native GKE cluster, you can use the
+            # following flag to have the proxy connect over private IP
+            # - name: CSQL_PROXY_PRIVATE_IP
+            #   value: "true"
 
-          # Enable HTTP healthchecks on port 9801. This enables /liveness,
-          # /readiness and /startup health check endpoints. Allow connections
-          # listen for connections on any interface (0.0.0.0) so that the
-          # k8s management components can reach these endpoints.
-          - name: CSQL_PROXY_HEALTH_CHECK
-            value: "true"
-          - name: CSQL_PROXY_HTTP_PORT
-            value: "9801"
-          - name: CSQL_PROXY_HTTP_ADDRESS
-            value: 0.0.0.0
+            # Enable HTTP healthchecks on port 9801. This enables /liveness,
+            # /readiness and /startup health check endpoints. Allow connections
+            # listen for connections on any interface (0.0.0.0) so that the
+            # k8s management components can reach these endpoints.
+            - name: CSQL_PROXY_HEALTH_CHECK
+              value: "true"
+            - name: CSQL_PROXY_HTTP_PORT
+              value: "9801"
+            - name: CSQL_PROXY_HTTP_ADDRESS
+              value: 0.0.0.0
 
-          # Configure the proxy to exit gracefully when sent a k8s configuration
-          # file.
-          - name: CSQL_PROXY_EXIT_ZERO_ON_SIGTERM
-            value: "false"
+            # Configure the proxy to exit gracefully when sent a k8s configuration
+            # file.
+            - name: CSQL_PROXY_EXIT_ZERO_ON_SIGTERM
+              value: "false"
 
-          # Enable the admin api server (which only listens for local connections)
-          # and enable the /quitquitquit endpoint. This allows other pods
-          # to shut down the proxy gracefully when they are ready to exit.
-          - name: CSQL_PROXY_QUITQUITQUIT
-            value: "true"
-          - name: CSQL_PROXY_ADMIN_PORT
-            value: "9092"
+            # Enable the admin api server (which only listens for local connections)
+            # and enable the /quitquitquit endpoint. This allows other pods
+            # to shut down the proxy gracefully when they are ready to exit.
+            - name: CSQL_PROXY_QUITQUITQUIT
+              value: "true"
+            - name: CSQL_PROXY_ADMIN_PORT
+              value: "9092"
 
-          # Enable structured logging with LogEntry format
-          - name: CSQL_PROXY_STRUCTURED_LOGS
-            value: "true"
+            # Enable structured logging with LogEntry format
+            - name: CSQL_PROXY_STRUCTURED_LOGS
+              value: "true"
 
           # The /startup probe returns OK when the proxy is ready to receive
           # connections from the application. In this example, k8s will check
@@ -851,8 +833,8 @@ spec:
           # Declare the HTTP Port so that k8s components can reach the
           # metrics and health check endpoints.
           ports:
-          - containerPort: 9801
-            protocol: TCP
+            - containerPort: 9801
+              protocol: TCP
           lifecycle:
             preStop:
               exec:
@@ -940,9 +922,9 @@ spec:
             - name: REDIS_PORT
               value: "${MAT_REDIS_PORT}"
             - name: REDIS_PASSWORD
-              value: "${MAT_REDIS_PASSWORD}" 
+              value: "${MAT_REDIS_PASSWORD}"
             - name: CELERY_CLOUDVOLUME_CACHE_BYTES
-              value: "100000000"               
+              value: "100000000"
           resources:
             requests:
               cpu: 10m
@@ -964,40 +946,40 @@ spec:
           # Replace <DB_PORT> with the port that the proxy should open
           # to listen for database connections from the application
           env:
-          - name: CSQL_PROXY_PORT
-            value: "3306"
-          # If connecting from a VPC-native GKE cluster, you can use the
-          # following flag to have the proxy connect over private IP
-          # - name: CSQL_PROXY_PRIVATE_IP
-          #   value: "true"
+            - name: CSQL_PROXY_PORT
+              value: "3306"
+            # If connecting from a VPC-native GKE cluster, you can use the
+            # following flag to have the proxy connect over private IP
+            # - name: CSQL_PROXY_PRIVATE_IP
+            #   value: "true"
 
-          # Enable HTTP healthchecks on port 9801. This enables /liveness,
-          # /readiness and /startup health check endpoints. Allow connections
-          # listen for connections on any interface (0.0.0.0) so that the
-          # k8s management components can reach these endpoints.
-          - name: CSQL_PROXY_HEALTH_CHECK
-            value: "true"
-          - name: CSQL_PROXY_HTTP_PORT
-            value: "9801"
-          - name: CSQL_PROXY_HTTP_ADDRESS
-            value: 0.0.0.0
+            # Enable HTTP healthchecks on port 9801. This enables /liveness,
+            # /readiness and /startup health check endpoints. Allow connections
+            # listen for connections on any interface (0.0.0.0) so that the
+            # k8s management components can reach these endpoints.
+            - name: CSQL_PROXY_HEALTH_CHECK
+              value: "true"
+            - name: CSQL_PROXY_HTTP_PORT
+              value: "9801"
+            - name: CSQL_PROXY_HTTP_ADDRESS
+              value: 0.0.0.0
 
-          # Configure the proxy to exit gracefully when sent a k8s configuration
-          # file.
-          - name: CSQL_PROXY_EXIT_ZERO_ON_SIGTERM
-            value: "true"
+            # Configure the proxy to exit gracefully when sent a k8s configuration
+            # file.
+            - name: CSQL_PROXY_EXIT_ZERO_ON_SIGTERM
+              value: "true"
 
-          # Enable the admin api server (which only listens for local connections)
-          # and enable the /quitquitquit endpoint. This allows other pods
-          # to shut down the proxy gracefully when they are ready to exit.
-          - name: CSQL_PROXY_QUITQUITQUIT
-            value: "true"
-          - name: CSQL_PROXY_ADMIN_PORT
-            value: "9092"
+            # Enable the admin api server (which only listens for local connections)
+            # and enable the /quitquitquit endpoint. This allows other pods
+            # to shut down the proxy gracefully when they are ready to exit.
+            - name: CSQL_PROXY_QUITQUITQUIT
+              value: "true"
+            - name: CSQL_PROXY_ADMIN_PORT
+              value: "9092"
 
-          # Enable structured logging with LogEntry format
-          - name: CSQL_PROXY_STRUCTURED_LOGS
-            value: "true"
+            # Enable structured logging with LogEntry format
+            - name: CSQL_PROXY_STRUCTURED_LOGS
+              value: "true"
 
           # The /startup probe returns OK when the proxy is ready to receive
           # connections from the application. In this example, k8s will check
@@ -1060,8 +1042,8 @@ spec:
           # Declare the HTTP Port so that k8s components can reach the
           # metrics and health check endpoints.
           ports:
-          - containerPort: 9801
-            protocol: TCP
+            - containerPort: 9801
+              protocol: TCP
           lifecycle:
             preStop:
               httpGet:

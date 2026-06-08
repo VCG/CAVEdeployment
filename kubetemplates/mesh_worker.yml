@@ -61,7 +61,7 @@ spec:
       terminationGracePeriodSeconds: 20
       containers:
         - name: meshworker
-          image: ${PYCG_IMAGE_SRC}
+          image: ${DOCKER_REPOSITORY}/pychunkedgraph:v${PYCG_VERSION}
           imagePullPolicy: Always
           volumeMounts:
             - name: google-cloud-key
